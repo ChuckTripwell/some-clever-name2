@@ -22,8 +22,8 @@ RUN pacman -Syy --needed --overwrite "*" --noconfirm cachyos-keyring cachyos-mir
 RUN pacman -Syy --noconfirm
 
 # install basic stuff
-RUN pacman -S --noconfirm base dracut linux-firmware ostree systemd btrfs-progs e2fsprogs xfsprogs binutils dosfstools skopeo dbus dbus-glib glib2 shadow udev wget
-RUN pacman -S --noconfirm librsvg libglvnd qt6-multimedia-ffmpeg plymouth acpid ddcutil dmidecode mesa-utils ntfs-3g vulkan-tools wayland-utils playerctl curl
+RUN pacman -S --noconfirm base dracut linux-firmware ostree systemd btrfs-progs e2fsprogs xfsprogs binutils dosfstools skopeo dbus dbus-glib glib2 shadow udev wget crun
+RUN pacman -S --noconfirm librsvg libglvnd qt6-multimedia-ffmpeg plymouth acpid ddcutil dmidecode mesa-utils ntfs-3g vulkan-tools wayland-utils playerctl curl cosign
 RUN pacman -S --noconfirm distrobox podman shim networkmanager firewalld flatpak gamescope scx-scheds scx-manager sudo bash bash-completion fastfetch unzip ptyxis
 
 RUN pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -36,9 +36,6 @@ RUN pacman -Sy --noconfirm chaotic-aur/bootc
 
 # add post-transaction flatpsks
 RUN mkdir -p /usr/share/flatpak/preinstall.d/
-
-# Bazaar | Get most of your software here, flatpaks that are easy to install and use~
-RUN echo -e "[Flatpak Preinstall io.github.kolunmi.Bazaar]\nBranch=stable\nIsRuntime=false" > /usr/share/flatpak/preinstall.d/Bazaar.preinstall
 
 # Systemd flatpak preinstall service
 RUN echo -e '[Unit]\n\
@@ -169,7 +166,13 @@ https://raw.githubusercontent.com/ChuckTripwell/cachyos-bootc-template/refs/head
 ## enable your services
 # example:
 #
-systemctl enable docker
+systemctl enable podman
+
+# add flatpaks
+# example: Bazaar (very useful, do not remove!)
+#
+RUN echo -e "[Flatpak Preinstall io.github.kolunmi.Bazaar]\nBranch=stable\nIsRuntime=false" > /usr/share/flatpak/preinstall.d/Bazaar.preinstall
+
 
 ########################################################################################################################################
 # end of changes
