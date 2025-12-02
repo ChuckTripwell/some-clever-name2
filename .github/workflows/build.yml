@@ -16,7 +16,7 @@ on:
 env:
   IMAGE_DESC: "Opinionated Arch bootc OS"
   IMAGE_KEYWORDS: "bootc,arch,distro,cachyos"
-  IMAGE_LOGO_URL: "https://avatars.fastly.steamstatic.com/f202c6cff208e405caf767b4171a6e8a90b6d5b8_full.jpg"
+  IMAGE_LOGO_URL: "https://raw.githubusercontent.com/ChuckTripwell/cachyos-bootc-template/refs/heads/main/face_logo.png"
   IMAGE_NAME: "${{ github.event.repository.name }}" # do not edit
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"  # do not edit
   DEFAULT_TAG: "latest"
