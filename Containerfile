@@ -7,7 +7,7 @@ RUN grep "= */var" /etc/pacman.conf | sed "/= *\/var/s/.*=// ; s/ //" | xargs -n
 mv -v "$1" "/usr/lib/sysimage/$(echo "$1" | sed "s@/var/@@")"' '' && \
     sed -i -e "/= *\/var/ s/^#//" -e "s@= */var@= /usr/lib/sysimage@g" -e "/DownloadUser/d" /etc/pacman.conf
 
-# force-refresh and add the chaotic-aur
+# force-refresh and add the chaotic-aur (where we get 'bootc' from)
 RUN curl https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/cachyos-mirrorlist/cachyos-mirrorlist -o /etc/pacman.d/cachyos-mirrorlist
 RUN pacman -Syy --needed --overwrite "*" --noconfirm cachyos-keyring cachyos-mirrorlist cachyos-v3-mirrorlist cachyos-v4-mirrorlist cachyos-hooks archlinux-keyring pacman-mirrorlist
 RUN pacman -Syy --noconfirm
@@ -17,20 +17,12 @@ RUN pacman -S --noconfirm base dracut linux-firmware ostree systemd btrfs-progs 
 RUN pacman -S --noconfirm librsvg libglvnd qt6-multimedia-ffmpeg plymouth acpid ddcutil dmidecode mesa-utils ntfs-3g vulkan-tools wayland-utils playerctl curl
 RUN pacman -S --noconfirm distrobox podman shim networkmanager firewalld flatpak gamescope scx-scheds scx-manager sudo bash bash-completion fastfetch unzip ptyxis
 
-
 RUN pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-
 RUN pacman-key --init && pacman-key --lsign-key 3056513887B78AEB
-
 RUN pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' --noconfirm
-
 RUN pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' --noconfirm
-
 RUN echo -e '[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf
-
 RUN pacman -Sy --noconfirm chaotic-aur/bootc
-
-
 
 
 # add post-transaction flatpsks
@@ -116,6 +108,9 @@ WantedBy=default.target multi-user.target' > /usr/lib/systemd/system/os-group-fi
 
 RUN echo -e "enable os-group-fix.service" > /usr/lib/systemd/system-preset/01-os-group-fix.preset
 
+# fix sudo
+RUN echo -e '%wheel ALL=(ALL:ALL) ALL
+
 
 # System services (Machine Boot level)
 RUN systemctl enable polkit.service \
@@ -133,9 +128,36 @@ net.ipv4.tcp_congestion_control=bbr' > /etc/sysctl.d/99-bbr3.conf
 
 ########################################################################################################################################
 # Changes go here:
+# (for stability, it is recommended not to use the AUR - that's what distrobox is for.)
+########################################################################################################################################
 
-RUN pacman -S --noconfirm linux-cachyos
+# ONLY ADD ONE KERNEL!!!
+# adding more than one will break the build.
+#
+# note: only cachyos-based kernels are tested, but you can pretty much use any kernel you want.
+# adding kernel headers is also recommended. complete example:
 
+RUN pacman -Sy --noconfirm linux-cachyos linux-cachyos-headers
+
+# install packages here! :)
+# available repos:
+# Archlinux default repo
+# CachyOS package repo
+# Chaotic-aur
+# I added micro for you. go nuts:
+#
+RUN pacman -S --noconfirm micro
+
+# Place logo at plymouth folder location to appear on boot and shutdown.
+#
+RUN mkdir -p /etc/plymouth && \
+      echo -e '[Daemon]\nTheme=spinner' | tee /etc/plymouth/plymouthd.conf && \
+      wget --tries=5 -O /usr/share/plymouth/themes/spinner/watermark.png \
+https://raw.githubusercontent.com/ChuckTripwell/cachyos-bootc-template/refs/heads/main/Text_Logo.png # this URL above leads to the logo shown on boot. you can use mine, or upload yours.
+
+
+########################################################################################################################################
+# end of changes
 ########################################################################################################################################
 
 # finalize
