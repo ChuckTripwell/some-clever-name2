@@ -118,7 +118,7 @@ WantedBy=default.target multi-user.target' > /usr/lib/systemd/system/os-group-fi
 RUN echo -e "enable os-group-fix.service" > /usr/lib/systemd/system-preset/01-os-group-fix.preset
 
 # fix sudo
-RUN echo -e '%wheel ALL=(ALL:ALL) ALL
+RUN echo -e '%wheel ALL=(ALL:ALL) ALL'
 
 
 # System services (Machine Boot level)
