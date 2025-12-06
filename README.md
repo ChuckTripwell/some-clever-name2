@@ -27,9 +27,6 @@ it depends:
 -if you used bootc-based images before then you should be fine.
      note: this is a one-way trip!!! you will not be able to go back to ublue-os/fedora/bazzite after rebasing!!!!
 
--it doesn't use any packages from the aur, if that's what your'e worried about.
-(don't worry, you can still use the aur in distrobox)
-
 # can I just pull this image into my Containerfile instead of forking it?
 yes, but note that you'll be stuck with the default linux-cachyos kernel.
 
